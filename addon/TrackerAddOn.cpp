@@ -11,7 +11,7 @@ static const uint32 kMsgAddRefs = 'tREF';
 
 
 void
-process_refs(entry_ref dir_ref, BMessage* message, void* /*reserved*/)
+process_refs(entry_ref /*dirRef*/, BMessage* message, void* /*reserved*/)
 {
 	if (message == NULL)
 		return;

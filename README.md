@@ -18,10 +18,20 @@ Keywords: `haiku` `haiku-os` `beos` `haiku-app` `native` `cpp` `drag-and-drop`
 > 3. The code was developed **with AI assistance**.
 > 4. **Use at your own risk.**
 
-## Features
+## Status
+
+Early skeleton (milestone M0). What works today:
 
 - Floating shelf window pinned to a screen edge, always on top, resizable
   vertically.
+- Highlights when something is dragged over it.
+- Remembers its position and height in `~/config/settings/Tansu/settings`.
+- App icon.
+
+## Planned features
+
+Not implemented yet:
+
 - Accepts drops of files/folders, plain text and images.
 - One row per item: real file icons, one-line text snippets, image thumbnails.
 - Drag items back out into any Haiku app (Tracker windows, text editors,
@@ -44,7 +54,8 @@ git clone https://github.com/Westenradev/Tansu-for-Haiku_os.git && cd Tansu-for-
 cmake -B build -G Ninja && ninja -C build && ./build/Tansu
 ```
 
-The Tracker add-on is built as `build/Add to Tansu.so`; install it with:
+The Tracker add-on is built as `build/Add to Tansu.so` (it launches Tansu,
+but the app does not add the files to the shelf yet); install it with:
 
 ```bash
 mkdir -p ~/config/add-ons/Tracker

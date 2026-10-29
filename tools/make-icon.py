@@ -3,7 +3,8 @@
 icon for Tansu, a small tansu chest / shelf-ledge shape on a 64x64 canvas.
 
 The byte layout mirrors Haiku's src/libs/icon/flat_icon/FlatIconImporter.cpp:
-  uint32 LE magic 'ficn'
+  uint32 magic FLAT_ICON_MAGIC = 'ficn' (0x6669636e), little-endian, so the
+    file starts with the bytes "ncif"
   styles:  u8 count; per style u8 type + payload
   paths:   u8 count; per path u8 flags, u8 pointCount, coords
   shapes:  u8 count; per shape u8 type, u8 styleIndex, u8 pathCount,
@@ -16,7 +17,8 @@ import argparse
 import struct
 import sys
 
-MAGIC = b"ficn"
+FLAT_ICON_MAGIC = 0x6669636E  # 'ficn' in FlatIconFormat.cpp
+MAGIC = struct.pack("<I", FLAT_ICON_MAGIC)  # b"ncif"
 
 STYLE_SOLID_COLOR = 1
 PATH_FLAG_CLOSED = 1 << 1
@@ -34,9 +36,9 @@ def write_coord(value):
 
 
 def solid_color_style(rgb):
-    """STYLE_SOLID_COLOR: 4 bytes in file order blue, green, red, alpha."""
+    """STYLE_SOLID_COLOR: a raw rgb_color, i.e. red, green, blue, alpha."""
     r, g, b = rgb
-    return bytes([STYLE_SOLID_COLOR, b, g, r, 255])
+    return bytes([STYLE_SOLID_COLOR, r, g, b, 255])
 
 
 def rect_path(x0, y0, x1, y1):
@@ -97,7 +99,7 @@ def verify(data):
     def read_u8():
         return read(1)[0]
 
-    if read(4) != MAGIC:
+    if struct.unpack("<I", read(4))[0] != FLAT_ICON_MAGIC:
         raise ValueError("bad magic")
 
     style_count = read_u8()

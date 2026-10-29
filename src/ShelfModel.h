@@ -5,7 +5,6 @@
 #include <List.h>
 #include <String.h>
 #include <Bitmap.h>
-#include <Locker.h>
 
 
 enum ShelfItemKind {
@@ -32,6 +31,10 @@ public:
 	void					SetThumbnail(BBitmap* bitmap);
 
 private:
+	// owns fThumbnail, so copying would double-delete it
+							ShelfItem(const ShelfItem&);
+			ShelfItem&		operator=(const ShelfItem&);
+
 	ShelfItemKind			fKind;
 	entry_ref				fRef;
 	BString					fText;
@@ -40,6 +43,8 @@ private:
 };
 
 
+// Not thread-safe: the model is owned by ShelfView and must only be used
+// from its window's thread.
 class ShelfModel
 {
 public:
@@ -53,8 +58,10 @@ public:
 	void					MakeEmpty();
 
 private:
+							ShelfModel(const ShelfModel&);
+			ShelfModel&		operator=(const ShelfModel&);
+
 	BList					fItems;
-	mutable BLocker			fLocker;
 };
 
 #endif // SHELF_MODEL_H

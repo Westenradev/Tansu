@@ -5,7 +5,6 @@
 
 #include "ShelfModel.h"
 
-class ItemRowView;
 
 class ShelfView : public BView
 {
@@ -17,15 +16,16 @@ public:
 	virtual void			Draw(BRect updateRect);
 	virtual void			MessageReceived(BMessage* message);
 	virtual void			MouseMoved(BPoint point, uint32 transit,
-							const BMessage* dragMessage);
+								const BMessage* dragMessage);
 
 	ShelfModel*				Model() const		{ return fModel; }
 
 private:
 	void					_RebuildRows();
+	void					_SetDropHighlight(bool highlight);
 
 	ShelfModel*				fModel;
-	BView*					fEmptyView;
+	bool					fDropHighlight;
 };
 
 #endif // SHELF_VIEW_H

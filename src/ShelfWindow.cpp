@@ -6,17 +6,21 @@
 #include "ShelfView.h"
 
 
+static const float kShelfWidth = 160;
+static const float kDefaultHeight = 400;
+static const float kMinHeight = 100;
+static const float kEdgeGap = 8;
+
+
 ShelfWindow::ShelfWindow()
 	:
-	BWindow(BRect(0, 0, 159, 399), "Tansu",
-		B_BORDERED_WINDOW_LOOK, B_FLOATING_ALL_WINDOW_FEEL,
-		B_NOT_ZOOMABLE | B_AVOID_FOCUS | B_QUIT_ON_WINDOW_CLOSE),
+	BWindow(BRect(0, 0, kShelfWidth - 1, kDefaultHeight - 1), "Tansu",
+		B_FLOATING_WINDOW_LOOK, B_FLOATING_ALL_WINDOW_FEEL,
+		B_NOT_ZOOMABLE | B_NOT_H_RESIZABLE | B_AVOID_FOCUS
+			| B_QUIT_ON_WINDOW_CLOSE),
 	fShelfView(NULL)
 {
-	BScreen screen;
-	BRect screenFrame = screen.Frame();
-	MoveTo(screenFrame.right - Bounds().Width() - 8,
-		(screenFrame.Height() - Bounds().Height()) / 2);
+	fSettings.Load();
 
 	fShelfView = new ShelfView("shelfView");
 
@@ -24,7 +28,7 @@ ShelfWindow::ShelfWindow()
 		.Add(fShelfView)
 		.SetInsets(0, 0, 0, 0);
 
-	SetSizeLimits(160, 160, 100, screenFrame.Height() - 40);
+	_PlaceOnScreen();
 }
 
 
@@ -36,6 +40,31 @@ ShelfWindow::~ShelfWindow()
 bool
 ShelfWindow::QuitRequested()
 {
-	be_app->PostMessage(B_QUIT_REQUESTED);
+	// B_QUIT_ON_WINDOW_CLOSE quits the application for us.
+	fSettings.SetWindowFrame(Frame());
+	fSettings.Save();
 	return true;
+}
+
+
+void
+ShelfWindow::_PlaceOnScreen()
+{
+	BRect screenFrame = BScreen(this).Frame();
+
+	SetSizeLimits(kShelfWidth - 1, kShelfWidth - 1, kMinHeight,
+		screenFrame.Height() - 2 * kEdgeGap);
+
+	BRect frame = fSettings.WindowFrame();
+	if (frame.IsValid() && screenFrame.Contains(frame.LeftTop())) {
+		ResizeTo(kShelfWidth - 1, frame.Height());
+		MoveTo(frame.LeftTop());
+		return;
+	}
+
+	float left = fSettings.EdgeRight()
+		? screenFrame.right - Bounds().Width() - kEdgeGap
+		: screenFrame.left + kEdgeGap;
+	MoveTo(left, screenFrame.top
+		+ (screenFrame.Height() - Bounds().Height()) / 2);
 }

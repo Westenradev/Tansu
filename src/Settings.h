@@ -14,6 +14,7 @@ public:
 	status_t				Load();
 	status_t				Save() const;
 
+	// invalid (BRect()) until a frame has been saved
 	BRect					WindowFrame() const		{ return fWindowFrame; }
 	void					SetWindowFrame(BRect frame) { fWindowFrame = frame; }
 

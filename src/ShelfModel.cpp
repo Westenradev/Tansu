@@ -1,6 +1,9 @@
 #include "ShelfModel.h"
 
 
+static const int32 kMaxNameChars = 40;
+
+
 ShelfItem::ShelfItem(ShelfItemKind kind)
 	:
 	fKind(kind),
@@ -19,10 +22,8 @@ void
 ShelfItem::SetRef(const entry_ref& ref)
 {
 	fRef = ref;
-	BEntry entry(&ref);
-	BString name;
-	if (entry.InitCheck() == B_OK && entry.GetName(name) == B_OK)
-		fName = name;
+	if (fRef.name != NULL)
+		fName = fRef.name;
 }
 
 
@@ -30,8 +31,14 @@ void
 ShelfItem::SetText(const BString& text)
 {
 	fText = text;
+
+	// first line only, cut on character (not byte) boundaries for UTF-8
 	fName = text;
-	fName.Truncate(40);
+	int32 lineEnd = fName.FindFirst('\n');
+	if (lineEnd >= 0)
+		fName.Truncate(lineEnd);
+	if (fName.CountChars() > kMaxNameChars)
+		fName.TruncateChars(kMaxNameChars);
 }
 
 
@@ -44,8 +51,6 @@ ShelfItem::SetThumbnail(BBitmap* bitmap)
 
 
 ShelfModel::ShelfModel()
-	:
-	fLocker("shelf model")
 {
 }
 
@@ -61,7 +66,6 @@ ShelfModel::AddItem(ShelfItem* item)
 {
 	if (item == NULL)
 		return false;
-	BAutolock lock(fLocker);
 	return fItems.AddItem(item);
 }
 
@@ -69,7 +73,6 @@ ShelfModel::AddItem(ShelfItem* item)
 int32
 ShelfModel::CountItems() const
 {
-	BAutolock lock(fLocker);
 	return fItems.CountItems();
 }
 
@@ -77,7 +80,6 @@ ShelfModel::CountItems() const
 ShelfItem*
 ShelfModel::ItemAt(int32 index) const
 {
-	BAutolock lock(fLocker);
 	return (ShelfItem*)fItems.ItemAt(index);
 }
 
@@ -85,7 +87,6 @@ ShelfModel::ItemAt(int32 index) const
 bool
 ShelfModel::RemoveItem(int32 index)
 {
-	BAutolock lock(fLocker);
 	ShelfItem* item = (ShelfItem*)fItems.RemoveItem(index);
 	if (item == NULL)
 		return false;
@@ -97,7 +98,6 @@ ShelfModel::RemoveItem(int32 index)
 void
 ShelfModel::MakeEmpty()
 {
-	BAutolock lock(fLocker);
 	for (int32 i = fItems.CountItems() - 1; i >= 0; i--)
 		delete (ShelfItem*)fItems.ItemAt(i);
 	fItems.MakeEmpty();

@@ -3,16 +3,27 @@
 #include <Directory.h>
 #include <File.h>
 #include <FindDirectory.h>
+#include <Mime.h>
 #include <Path.h>
-#include <StorageDefs.h>
 
 
-static const char* kSettingsFileName = "Tansu/settings";
+static const char* kSettingsDirName = "Tansu";
+static const char* kSettingsFileName = "settings";
+
+
+static status_t
+settings_path(BPath& path)
+{
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status != B_OK)
+		return status;
+	return path.Append(kSettingsDirName);
+}
 
 
 Settings::Settings()
 	:
-	fWindowFrame(BRect(0, 0, 159, 399)),
+	fWindowFrame(),
 	fIconSize(B_MINI_ICON),
 	fEdgeRight(true)
 {
@@ -22,22 +33,22 @@ Settings::Settings()
 status_t
 Settings::Load()
 {
-	char path[B_PATH_NAME_LENGTH];
-	status_t status = find_directory(B_USER_SETTINGS_PATH, path, sizeof(path));
+	BPath path;
+	status_t status = settings_path(path);
+	if (status == B_OK)
+		status = path.Append(kSettingsFileName);
 	if (status != B_OK)
 		return status;
 
-	BPath settingsPath(path);
-	if (settingsPath.Append(kSettingsFileName) != B_OK)
-		return B_ERROR;
-
-	BFile file(settingsPath.Path(), B_READ_ONLY);
-	if (file.InitCheck() != B_OK)
-		return B_NO_INIT;
+	BFile file(path.Path(), B_READ_ONLY);
+	status = file.InitCheck();
+	if (status != B_OK)
+		return status;
 
 	BMessage message;
-	if (message.Unflatten(&file) != B_OK)
-		return B_ERROR;
+	status = message.Unflatten(&file);
+	if (status != B_OK)
+		return status;
 
 	BRect frame;
 	if (message.FindRect("windowFrame", &frame) == B_OK)
@@ -58,27 +69,23 @@ Settings::Load()
 status_t
 Settings::Save() const
 {
-	char path[B_PATH_NAME_LENGTH];
-	status_t status = find_directory(B_USER_SETTINGS_PATH, path, sizeof(path));
+	BPath path;
+	status_t status = settings_path(path);
 	if (status != B_OK)
 		return status;
 
-	BPath settingsPath(path);
-	if (settingsPath.Append("Tansu") != B_OK)
-		return B_ERROR;
+	status = create_directory(path.Path(), 0755);
+	if (status != B_OK)
+		return status;
 
-	BDirectory directory(settingsPath.Path());
-	if (directory.InitCheck() != B_OK) {
-		status = create_directory(settingsPath.Path(), 0777);
-		if (status != B_OK)
-			return status;
-	}
-	if (settingsPath.Append("settings") != B_OK)
-		return B_ERROR;
+	status = path.Append(kSettingsFileName);
+	if (status != B_OK)
+		return status;
 
-	BFile file(settingsPath.Path(), B_READ_WRITE | B_CREATE_FILE | B_ERASE_FILE);
-	if (file.InitCheck() != B_OK)
-		return file.InitCheck();
+	BFile file(path.Path(), B_WRITE_ONLY | B_CREATE_FILE | B_ERASE_FILE);
+	status = file.InitCheck();
+	if (status != B_OK)
+		return status;
 
 	BMessage message;
 	message.AddRect("windowFrame", fWindowFrame);

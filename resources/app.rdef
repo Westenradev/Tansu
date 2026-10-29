@@ -1,0 +1,56 @@
+resource app_signature "application/x-vnd.WestenraSoftworks-Tansu";
+
+resource app_flags B_SINGLE_LAUNCH;
+
+resource app_version {
+	major      = 0,
+	middle     = 1,
+	minor      = 0,
+	variety    = B_APPV_ALPHA,
+	internal   = 0,
+	short_info = "Tansu",
+	long_info  = "Tansu 0.1.0 - a shelf for parking files during drag and drop,\n"
+		"Copyright (c) 2026 Westenra Softworks, MIT License"
+};
+
+resource app_mime_info {
+	app_signature = "application/x-vnd.WestenraSoftworks-Tansu";
+	file_extensions = {
+		"application/x-vnd.WestenraSoftworks-Tansu"
+	};
+	file_types = {
+		"application/x-vnd.WestenraSoftworks-Tansu"
+	};
+	mime_data = {
+		"application/x-vnd.WestenraSoftworks-Tansu": {
+			icon: {
+				B_MINI_ICON: {
+					vector_icon: {
+						$"6669636e04012e6ab0ff011e4878ff0110243cff0150bee6ff070a04282a582a"
+						$"583428340a042a32563256582a580a042c3f543f54412c410a042c4b544b544d"
+						$"2c4d0a043d374337433a3d3a0a043d45434543483d480a043d51435143543d54"
+						$"070a000100000a010101000a020102000a020103000a030104000a030105000a"
+						$"03010600"
+					}
+				},
+				B_LARGE_ICON: {
+					vector_icon: {
+						$"6669636e04012e6ab0ff011e4878ff0110243cff0150bee6ff070a04282a582a"
+						$"583428340a042a32563256582a580a042c3f543f54412c410a042c4b544b544d"
+						$"2c4d0a043d374337433a3d3a0a043d45434543483d480a043d51435143543d54"
+						$"070a000100000a010101000a020102000a020103000a030104000a030105000a"
+						$"03010600"
+					}
+				}
+			}
+		}
+	}
+};
+
+resource vector_icon {
+	$"6669636e04012e6ab0ff011e4878ff0110243cff0150bee6ff070a04282a582a"
+	$"583428340a042a32563256582a580a042c3f543f54412c410a042c4b544b544d"
+	$"2c4d0a043d374337433a3d3a0a043d45434543483d480a043d51435143543d54"
+	$"070a000100000a010101000a020102000a020103000a030104000a030105000a"
+	$"03010600"
+};

@@ -5,9 +5,7 @@
 #include <Roster.h>
 #include <TrackerAddOn.h>
 
-
-static const char* kAppSignature = "application/x-vnd.WestenraSoftworks-Tansu";
-static const uint32 kMsgAddRefs = 'tREF';
+#include "Constants.h"
 
 
 void

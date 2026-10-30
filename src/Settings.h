@@ -5,6 +5,8 @@
 #include <Message.h>
 #include <Rect.h>
 
+class BPath;
+
 
 class Settings
 {
@@ -13,6 +15,10 @@ public:
 
 	status_t				Load();
 	status_t				Save() const;
+
+	// ~/config/settings/Tansu/<leaf>
+	static	status_t		GetPath(BPath& path, const char* leaf,
+								bool createDirectory = false);
 
 	// invalid (BRect()) until a frame has been saved
 	BRect					WindowFrame() const		{ return fWindowFrame; }

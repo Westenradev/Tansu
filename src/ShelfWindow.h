@@ -13,6 +13,7 @@ public:
 							ShelfWindow();
 	virtual					~ShelfWindow();
 
+	virtual void			MessageReceived(BMessage* message);
 	virtual bool			QuitRequested();
 
 private:

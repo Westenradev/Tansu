@@ -19,8 +19,8 @@ add_executable(Tansu
 	src/App.cpp
 	src/ShelfWindow.cpp
 	src/ShelfView.cpp
-	src/ItemRowView.cpp
-	src/ShelfModel.cpp
+	src/ShelfListItem.cpp
+	src/ShelfItem.cpp
 	src/Settings.cpp
 )
 
@@ -28,10 +28,20 @@ target_include_directories(Tansu PRIVATE src)
 
 target_link_libraries(Tansu be tracker device translation localestub)
 
+set(TANSU_RSRC ${CMAKE_CURRENT_BINARY_DIR}/Tansu.rsrc)
+
+add_custom_command(OUTPUT ${TANSU_RSRC}
+	COMMAND rc -o ${TANSU_RSRC} ${CMAKE_CURRENT_SOURCE_DIR}/resources/app.rdef
+	DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/resources/app.rdef
+	COMMENT "Compiling resources")
+add_custom_target(TansuResources DEPENDS ${TANSU_RSRC})
+add_dependencies(Tansu TansuResources)
+
+# relink (and so re-run the POST_BUILD step) whenever the resources change
+set_target_properties(Tansu PROPERTIES LINK_DEPENDS ${TANSU_RSRC})
+
 add_custom_command(TARGET Tansu POST_BUILD
-	COMMAND rc -o ${CMAKE_CURRENT_BINARY_DIR}/Tansu.rsrc
-		${CMAKE_CURRENT_SOURCE_DIR}/resources/app.rdef
-	COMMAND xres -o $<TARGET_FILE:Tansu> ${CMAKE_CURRENT_BINARY_DIR}/Tansu.rsrc
+	COMMAND xres -o $<TARGET_FILE:Tansu> ${TANSU_RSRC}
 	COMMAND mimeset -f $<TARGET_FILE:Tansu>
 	COMMENT "Adding resources and MIME signature to Tansu")
 
@@ -41,9 +51,11 @@ add_library(TrackerAddOn SHARED
 
 set_target_properties(TrackerAddOn PROPERTIES
 	PREFIX ""
-	SUFFIX ".so"
+	SUFFIX ""
 	OUTPUT_NAME "Add to Tansu"
 )
+
+target_include_directories(TrackerAddOn PRIVATE src)
 
 target_link_libraries(TrackerAddOn be tracker)
 

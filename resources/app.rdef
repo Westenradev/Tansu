@@ -2,14 +2,19 @@ resource app_signature "application/x-vnd.WestenraSoftworks-Tansu";
 
 resource app_flags B_SINGLE_LAUNCH;
 
+// Any file can be dropped on the Tansu icon or opened with Tansu.
+resource file_types message {
+	"types" = "application/octet-stream"
+};
+
 resource app_version {
 	major      = 0,
-	middle     = 1,
+	middle     = 2,
 	minor      = 0,
 	variety    = B_APPV_ALPHA,
 	internal   = 0,
 	short_info = "Tansu",
-	long_info  = "Tansu 0.1.0 - a shelf for parking files during drag and drop, "
+	long_info  = "Tansu 0.2.0 - a shelf for parking files, text and images during drag and drop, "
 		"Copyright (c) 2026 Westenra Softworks, MIT License"
 };
 

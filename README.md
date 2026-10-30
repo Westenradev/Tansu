@@ -18,28 +18,34 @@ Keywords: `haiku` `haiku-os` `beos` `haiku-app` `native` `cpp` `drag-and-drop`
 > 3. The code was developed **with AI assistance**.
 > 4. **Use at your own risk.**
 
-## Status
+## Features
 
-Early skeleton (milestone M0). What works today:
+Tested on Haiku R1/beta6 (x86_64).
 
-- Floating shelf window pinned to a screen edge, always on top, resizable
-  vertically.
-- Highlights when something is dragged over it.
-- Remembers its position and height in `~/config/settings/Tansu/settings`.
-- App icon.
+- Floating shelf window at the screen edge, always on top, resizable
+  vertically; it remembers its position and height.
+- Drop **files and folders** (from Tracker), **text** (from StyledEdit,
+  Terminal, mail and other text views) and **images** (for example a
+  selection dragged from ShowImage) onto the shelf.
+- One row per item: real Tracker icons for files, a one-line snippet for
+  text, a thumbnail for images.
+- Drag items back out: files to Tracker or any app that accepts files, text
+  to text views (or to Tracker, where it becomes a text clipping), images to
+  Tracker (saved as a PNG file). Select several rows (Shift-click) to drag
+  them together.
+- Right-click a row: **Open**, **Show in Tracker**, **Remove**. Right-click
+  anywhere: **Paste from clipboard**, **Clear shelf**, **About Tansu**,
+  **Quit**. Double-click a row to open it.
+- Files on the shelf are followed when they are renamed or moved, and
+  removed from the shelf when they are deleted.
+- The shelf (files, text and images) survives restarts; it is stored in
+  `~/config/settings/Tansu/`.
+- Optional Tracker add-on: right-click files → **Add-ons → Add to Tansu**
+  (starts Tansu if it is not running). You can also drop files on the Tansu
+  icon or run `Tansu file1 file2 ...`.
 
-## Planned features
-
-Not implemented yet:
-
-- Accepts drops of files/folders, plain text and images.
-- One row per item: real file icons, one-line text snippets, image thumbnails.
-- Drag items back out into any Haiku app (Tracker windows, text editors,
-  mail composers); multi-select and drag several rows at once.
-- Context menus: Open, Show in Tracker, Remove per row; Clear shelf, Paste
-  from clipboard, About, Quit for the shelf itself.
-- Shelf contents survive restarts (file items) via `~/config/settings/Tansu/`.
-- Optional Tracker add-on: right-click a file → **Add-ons → Add to Tansu**.
+When files are dragged from the shelf into a Tracker window, Tracker copies
+them; the originals stay where they are.
 
 ## Building
 
@@ -54,14 +60,15 @@ git clone https://github.com/Westenradev/Tansu-for-Haiku_os.git && cd Tansu-for-
 cmake -B build -G Ninja && ninja -C build && ./build/Tansu
 ```
 
-The Tracker add-on is built as `build/Add to Tansu.so` (it launches Tansu,
-but the app does not add the files to the shelf yet); install it with:
+The Tracker add-on is built as `build/Add to Tansu`; install it with:
 
 ```bash
-mkdir -p ~/config/add-ons/Tracker
-cp "build/Add to Tansu.so" ~/config/add-ons/Tracker/
-# then restart Tracker
+mkdir -p ~/config/non-packaged/add-ons/Tracker
+cp "build/Add to Tansu" ~/config/non-packaged/add-ons/Tracker/
 ```
+
+It appears in Tracker's **Add-ons** menu right away. (`~/config/add-ons` is
+managed by the package system and is read-only.)
 
 The app icon is drawn in `resources/icon.svg` (it follows Haiku's
 [icon guidelines](https://www.haiku-os.org/development/icon-guidelines) and can
@@ -87,5 +94,6 @@ MIT License — see [LICENSE](LICENSE). Copyright (c) 2026 Westenra Softworks.
 ## Future ideas
 
 - Archivable shelf replicant for the Desktop (BDragger / BShelf).
-- Session persistence for text and image items.
 - Auto-start on login (add to `~/config/settings/boot/launch`).
+- Keyboard shortcuts (the shelf never takes focus, so it has none yet).
+- Translations (Haiku's locale kit).

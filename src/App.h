@@ -13,6 +13,9 @@ public:
 
 	virtual void		ReadyToRun();
 	virtual void		MessageReceived(BMessage* message);
+	virtual void		RefsReceived(BMessage* message);
+	virtual void		ArgvReceived(int32 argc, char** argv);
+	virtual void		AboutRequested();
 
 private:
 	ShelfWindow*		fShelfWindow;

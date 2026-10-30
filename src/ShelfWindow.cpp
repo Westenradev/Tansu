@@ -2,7 +2,9 @@
 
 #include <LayoutBuilder.h>
 #include <Screen.h>
+#include <ScrollView.h>
 
+#include "Constants.h"
 #include "ShelfView.h"
 
 
@@ -22,10 +24,12 @@ ShelfWindow::ShelfWindow()
 {
 	fSettings.Load();
 
-	fShelfView = new ShelfView("shelfView");
+	fShelfView = new ShelfView("shelfView", fSettings.IconSize());
+	BScrollView* scrollView = new BScrollView("scrollView", fShelfView, 0,
+		false, true, B_NO_BORDER);
 
 	BLayoutBuilder::Group<>(this, B_VERTICAL, 0)
-		.Add(fShelfView)
+		.Add(scrollView)
 		.SetInsets(0, 0, 0, 0);
 
 	_PlaceOnScreen();
@@ -34,6 +38,22 @@ ShelfWindow::ShelfWindow()
 
 ShelfWindow::~ShelfWindow()
 {
+}
+
+
+void
+ShelfWindow::MessageReceived(BMessage* message)
+{
+	switch (message->what) {
+		case kMsgAddRefs:
+		case B_REFS_RECEIVED:
+			fShelfView->AddRefs(message);
+			break;
+
+		default:
+			BWindow::MessageReceived(message);
+			break;
+	}
 }
 
 

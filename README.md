@@ -56,7 +56,7 @@ pkgman install -y cmd:git cmd:cmake cmd:ninja cmd:g++ haiku_devel
 ```
 
 ```bash
-git clone https://github.com/Westenradev/Tansu-for-Haiku_os.git && cd Tansu-for-Haiku_os
+git clone https://github.com/Westenradev/Tansu.git && cd Tansu
 cmake -B build -G Ninja && ninja -C build && ./build/Tansu
 ```
 
